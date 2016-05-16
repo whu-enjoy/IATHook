@@ -1,9 +1,8 @@
 /*******************************************************************************
-  ³ÌĞòÔ±      : enjoy
-  ×îºóĞŞ¸ÄÊ±¼ä: 2016Äê5ÔÂ16ÈÕ 21:43:02
-  º¯ÊıËµÃ÷    : ±¾³ÌĞòÓÃÓÚÊµÏÖ½ø³ÌÁĞ±í,½ø³ÌIATĞÅÏ¢,IAT hooking,inline hooking
-				±¾´úÂë¸üÏêÏ¸µÄ½âÊÍ,Çë¿´±¾ÈË²©¿Í
-http://blog.csdn.net/enjoy5512/article/details/51006114
+  ç¨‹åºå‘˜      : enjoy
+  æœ€åä¿®æ”¹æ—¶é—´: 2016å¹´5æœˆ16æ—¥ 21:43:02
+  å‡½æ•°è¯´æ˜    : æœ¬ç¨‹åºç”¨äºå®ç°è¿›ç¨‹åˆ—è¡¨,è¿›ç¨‹IATä¿¡æ¯,IAT hooking,inline hooking
+                æœ¬ä»£ç æ›´è¯¦ç»†çš„è§£é‡Š,è¯·çœ‹æœ¬äººåšå®¢
 *******************************************************************************/
 
 #include<stdio.h>
@@ -11,91 +10,91 @@ http://blog.csdn.net/enjoy5512/article/details/51006114
 #include<windows.h>
 #include"tlhelp32.h"
 
-#define NAMESIZE 41               //º¯ÊıÃû
+#define NAMESIZE 41               //å‡½æ•°å
 
-typedef struct ProcessNode        //½ø³Ì½á¹¹Ìå
+typedef struct ProcessNode        //è¿›ç¨‹ç»“æ„ä½“
 {
-	PROCESSENTRY32 pe32;          //±£´æ½ø³ÌĞÅÏ¢
-	MODULEENTRY32 me32;           //±£´æ½ø³ÌµÚÒ»¸öÄ£¿éĞÅÏ¢
+	PROCESSENTRY32 pe32;          //ä¿å­˜è¿›ç¨‹ä¿¡æ¯
+	MODULEENTRY32 me32;           //ä¿å­˜è¿›ç¨‹ç¬¬ä¸€ä¸ªæ¨¡å—ä¿¡æ¯
 	struct ProcessNode *next;
 }PNode;
 
-typedef struct IATNode            //IAT±íÏî½á¹¹Ìå
+typedef struct IATNode            //IATè¡¨é¡¹ç»“æ„ä½“
 {
-	char dllname[NAMESIZE];       //¶ÔÓ¦dllÃû
-	char name[NAMESIZE];          //º¯ÊıÃû
-	int order;                    //º¯ÊıĞòºÅ
-	int address;                  //º¯ÊıÔÚÄÚ´æÖĞµÄµØÖ·
-	int addrOfAddr;               //º¯ÊıµØÖ·ËùÔÚÄÚ´æµÄµØÖ·
+	char dllname[NAMESIZE];       //å¯¹åº”dllå
+	char name[NAMESIZE];          //å‡½æ•°å
+	int order;                    //å‡½æ•°åºå·
+	int address;                  //å‡½æ•°åœ¨å†…å­˜ä¸­çš„åœ°å€
+	int addrOfAddr;               //å‡½æ•°åœ°å€æ‰€åœ¨å†…å­˜çš„åœ°å€
 	struct IATNode *next;
 }INode;
 
-int DestroyPNode(PNode **pNode);  //ÊÍ·Å½ø³Ì½á¹¹ÌåÁ´±í
-int DestroyINode(INode **iNode);  //ÊÍ·ÅIAT±íÏî½á¹¹ÌåÁ´±í
-int InitPNode(PNode **pNode);     //³õÊ¼»¯½ø³Ì½á¹¹Ìå
-int InitINode(INode **iNode);     //³õÊ¼»¯IAT±íÏî½á¹¹Ìå
-void SetColor(unsigned short mColor);  //ÉèÖÃÖÕ¶Ë×ÖÌåÑÕÉ«
-int ShowHelp(void);               //ÏÔÊ¾°ïÖúĞÅÏ¢
-int EnableDebugPriv(const LPCTSTR lpName);  //»ñÈ¡µ÷ÊÔÈ¨ÏŞ
-int GetProcessInfo(PNode **pNode);          //µÃµ½½ø³ÌÁĞ±íĞÅÏ¢
-int GetIAT(INode **iNode, PNode *pNode, unsigned int pid);  //»ñÈ¡½ø³ÌIAT±íÏî
+int DestroyPNode(PNode **pNode);  //é‡Šæ”¾è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨
+int DestroyINode(INode **iNode);  //é‡Šæ”¾IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨
+int InitPNode(PNode **pNode);     //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“
+int InitINode(INode **iNode);     //åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“
+void SetColor(unsigned short mColor);  //è®¾ç½®ç»ˆç«¯å­—ä½“é¢œè‰²
+int ShowHelp(void);               //æ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯
+int EnableDebugPriv(const LPCTSTR lpName);  //è·å–è°ƒè¯•æƒé™
+int GetProcessInfo(PNode **pNode);          //å¾—åˆ°è¿›ç¨‹åˆ—è¡¨ä¿¡æ¯
+int GetIAT(INode **iNode, PNode *pNode, unsigned int pid);  //è·å–è¿›ç¨‹IATè¡¨é¡¹
 int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid); //IAT hooking
 int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid); //Inline Hooking
 
 int main(void)
 {
-	char cmd[15] = {0};     //±£´æ²Ù×÷Ö¸Áî
+	char cmd[15] = {0};     //ä¿å­˜æ“ä½œæŒ‡ä»¤
 
-	PNode *pNode = NULL;    //½ø³Ì½á¹¹ÌåÁ´±íÍ·Ö¸Õë
-	PNode *bkPNode = NULL;  //½ø³Ì½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-	INode *iNode = NULL;    //IAT½á¹¹ÌåÁ´±íÍ·Ö¸Õë
-	INode *bkINode = NULL;  //IAT½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
+	PNode *pNode = NULL;    //è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨å¤´æŒ‡é’ˆ
+	PNode *bkPNode = NULL;  //è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+	INode *iNode = NULL;    //IATç»“æ„ä½“é“¾è¡¨å¤´æŒ‡é’ˆ
+	INode *bkINode = NULL;  //IATç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
 
-	int i = 0;              //Ñ­»·¼ÆÊı
-	unsigned int pid = 0;   //½ø³ÌPID
-	int order = 0;          //º¯ÊıĞòºÅ
+	int i = 0;              //å¾ªç¯è®¡æ•°
+	unsigned int pid = 0;   //è¿›ç¨‹PID
+	int order = 0;          //å‡½æ•°åºå·
 
-	ShowHelp();             //³ÌĞò¿ªÊ¼ÏÔÊ¾°ïÖúĞÅÏ¢
+	ShowHelp();             //ç¨‹åºå¼€å§‹æ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯
 	printf("\n\nhook >");
 
-	for (;;)                //Ñ­»·½ÓÊÕÖ¸Áî
+	for (;;)                //å¾ªç¯æ¥æ”¶æŒ‡ä»¤
 	{
 		scanf("%s",cmd);
-		if (0 == strcmp(cmd,"help"))         //ÏÔÊ¾°ïÖúĞÅÏ¢
+		if (0 == strcmp(cmd,"help"))         //æ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯
 		{
 			ShowHelp();
 		}
-		else if (0 == strcmp(cmd,"exit"))   //ÍË³öÑ­»·
+		else if (0 == strcmp(cmd,"exit"))   //é€€å‡ºå¾ªç¯
 		{
 			break;
 		}
-		else if (0 == strcmp(cmd,"ls"))     //ÏÔÊ¾½ø³ÌÁĞ±í
+		else if (0 == strcmp(cmd,"ls"))     //æ˜¾ç¤ºè¿›ç¨‹åˆ—è¡¨
 		{
-			i = 0;                          //³õÊ¼»¯¼ÆÊıÆ÷
-			GetProcessInfo(&pNode);         //»ñÈ¡½ø³ÌÁĞ±íÁ´±í
-			bkPNode = pNode;                //³õÊ¼»¯½ø³Ì½á¹¹Ìå²Ù×÷Ö¸Õë
-			printf("½ø³ÌĞòºÅ  ¸¸½ø³ÌPID\t½ø³ÌPID\t\t×ÓÏß³ÌÊı  ½ø³ÌÃû\n");
+			i = 0;                          //åˆå§‹åŒ–è®¡æ•°å™¨
+			GetProcessInfo(&pNode);         //è·å–è¿›ç¨‹åˆ—è¡¨é“¾è¡¨
+			bkPNode = pNode;                //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“æ“ä½œæŒ‡é’ˆ
+			printf("è¿›ç¨‹åºå·  çˆ¶è¿›ç¨‹PID\tè¿›ç¨‹PID\t\tå­çº¿ç¨‹æ•°  è¿›ç¨‹å\n");
 			while (bkPNode)
 			{
 				i++;
-				SetColor(0xf);              //ÉèÖÃÖÕ¶Ë×ÖÌåÑÕÉ«
+				SetColor(0xf);              //è®¾ç½®ç»ˆç«¯å­—ä½“é¢œè‰²
 				printf("%d\t\t%d\t%d\t\t%d\t%s\n",i,bkPNode->pe32.th32ParentProcessID,bkPNode->pe32.th32ProcessID,bkPNode->pe32.cntThreads,bkPNode->pe32.szExeFile);
-				if (1 == bkPNode->me32.th32ModuleID)    //Èç¹ûÓĞÄ£¿éĞÅÏ¢,ÔòÏÔÊ¾¶ÔÓ¦Ä£¿éĞÅÏ¢
+				if (1 == bkPNode->me32.th32ModuleID)    //å¦‚æœæœ‰æ¨¡å—ä¿¡æ¯,åˆ™æ˜¾ç¤ºå¯¹åº”æ¨¡å—ä¿¡æ¯
 				{
-					printf("Ä£¿éÃû   : %s\nÄ£¿éÂ·¾¶ : %s\n",bkPNode->me32.szModule,bkPNode->me32.szExePath);
+					printf("æ¨¡å—å   : %s\næ¨¡å—è·¯å¾„ : %s\n",bkPNode->me32.szModule,bkPNode->me32.szExePath);
 				}
 				bkPNode = bkPNode->next;
 			}
 		}
-		else if (0 == strcmp(cmd,"info"))  //ÏÔÊ¾½ø³ÌIAT±íÏî
+		else if (0 == strcmp(cmd,"info"))  //æ˜¾ç¤ºè¿›ç¨‹IATè¡¨é¡¹
 		{
-			bkPNode = pNode;               //³õÊ¼»¯½ø³Ì½á¹¹Ìå²Ù×÷Ö¸Õë
-			pid = 0;                       //³õÊ¼»¯½ø³ÌPID
-			scanf("%d",&pid);              //ÊäÈë½ø³ÌPID
-			GetIAT(&iNode,bkPNode,pid);    //»ñÈ¡½ø³ÌIAT±íÏî
-			bkINode = iNode;               //³õÊ¼»¯IAT½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
+			bkPNode = pNode;               //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“æ“ä½œæŒ‡é’ˆ
+			pid = 0;                       //åˆå§‹åŒ–è¿›ç¨‹PID
+			scanf("%d",&pid);              //è¾“å…¥è¿›ç¨‹PID
+			GetIAT(&iNode,bkPNode,pid);    //è·å–è¿›ç¨‹IATè¡¨é¡¹
+			bkINode = iNode;               //åˆå§‹åŒ–IATç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
 
-			if (0 != bkINode->address)     //Èç¹û½ø³Ì½á¹¹Ìå²»Îª¿Õ,ÔòÑ­»·Êä³ö½ø³ÌIAT±íÏî
+			if (0 != bkINode->address)     //å¦‚æœè¿›ç¨‹ç»“æ„ä½“ä¸ä¸ºç©º,åˆ™å¾ªç¯è¾“å‡ºè¿›ç¨‹IATè¡¨é¡¹
 			{
 				for (;;)
 				{
@@ -114,65 +113,65 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd,"IATHook"))     //IAT Hooking
 		{
-			bkINode = iNode;                     //³õÊ¼»¯IAT±íÏî½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-			bkPNode = pNode;                     //³õÊ¼»¯½ø³Ì½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-			scanf("%d",&order);                  //ÊäÈëÒªhookµÄº¯ÊıĞòºÅ
+			bkINode = iNode;                     //åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+			bkPNode = pNode;                     //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+			scanf("%d",&order);                  //è¾“å…¥è¦hookçš„å‡½æ•°åºå·
 			if (0 == IATHook(bkINode, bkPNode, order, pid))  //IAT Hooking
 			{
-				printf("IAT±íĞŞ¸Ä³É¹¦!!\n");
+				printf("IATè¡¨ä¿®æ”¹æˆåŠŸ!!\n");
 			}
 			else
 			{
-				printf("IAT±íĞŞ¸ÄÊ§°Ü!!\n");
+				printf("IATè¡¨ä¿®æ”¹å¤±è´¥!!\n");
 			}
 		}
 		else if (0 == strcmp(cmd,"InlineHook"))  //Inline Hooking
 		{
-			bkINode = iNode;                     //³õÊ¼»¯IAT±íÏî½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-			bkPNode = pNode;                     //³õÊ¼»¯½ø³Ì½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-			scanf("%d",&order);                  //ÊäÈëÒªhookµÄº¯ÊıĞòºÅ
+			bkINode = iNode;                     //åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+			bkPNode = pNode;                     //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+			scanf("%d",&order);                  //è¾“å…¥è¦hookçš„å‡½æ•°åºå·
 			if (0 == InlineHook(bkINode, bkPNode, order, pid))  //Inline Hooking
 			{
-				printf("º¯ÊıĞŞ¸Ä³É¹¦!!\n");
+				printf("å‡½æ•°ä¿®æ”¹æˆåŠŸ!!\n");
 			}
 			else
 			{
-				printf("º¯ÊıĞŞ¸ÄÊ§°Ü!!\n");
+				printf("å‡½æ•°ä¿®æ”¹å¤±è´¥!!\n");
 			}
 		}
-		else                                     //²»´æÔÚµÄÖ¸Áî
+		else                                     //ä¸å­˜åœ¨çš„æŒ‡ä»¤
 		{
 			printf("error input!!please check and try again!!\n");
 		}
 		printf("\n\nhook >");
 	}
 
-	DestroyINode(&iNode);                       //³ÌĞò½áÊø,ÊÍ·Å½á¹¹ÌåÁ´±í
+	DestroyINode(&iNode);                       //ç¨‹åºç»“æŸ,é‡Šæ”¾ç»“æ„ä½“é“¾è¡¨
 	DestroyPNode(&pNode);
 	return 0;
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      ÊÍ·Å½ø³Ì½á¹¹ÌåÁ´±í
+  å‡½æ•°è¯´æ˜:
+      é‡Šæ”¾è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨
 
-  ÊäÈë²ÎÊı:
-      ½ø³Ì½á¹¹ÌåÁ´±íÍ·¶ş¼¶Ö¸Õë
+  è¾“å…¥å‚æ•°:
+      è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨å¤´äºŒçº§æŒ‡é’ˆ
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int DestroyPNode(PNode **pNode)
 {
-	PNode *nextPNode = NULL;    //Ö¸Ïòµ±Ç°Á´±íÖ¸ÕëµÄÏÂÒ»¸ö½á¹¹Ìå
+	PNode *nextPNode = NULL;    //æŒ‡å‘å½“å‰é“¾è¡¨æŒ‡é’ˆçš„ä¸‹ä¸€ä¸ªç»“æ„ä½“
 
-	if (NULL == *pNode)         //Èç¹ûÁ´±íÎª¿Õ,ÔòÍË³ö
+	if (NULL == *pNode)         //å¦‚æœé“¾è¡¨ä¸ºç©º,åˆ™é€€å‡º
 	{
 		return 0;
 	}
 	else
 	{
-		for (;;)                //Ñ­»·ÊÍ·Å½ø³Ì½á¹¹ÌåÁ´±í
+		for (;;)                //å¾ªç¯é‡Šæ”¾è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨
 		{
 			if (NULL == (*pNode)->next)
 			{
@@ -192,13 +191,13 @@ int DestroyPNode(PNode **pNode)
 
 
 /*
-  º¯ÊıËµÃ÷:
-      ÊÍ·ÅIAT±íÏî½á¹¹ÌåÁ´±í
+  å‡½æ•°è¯´æ˜:
+      é‡Šæ”¾IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨
 
-  ÊäÈë²ÎÊı:
-      IAT±íÏî½á¹¹ÌåÁ´±íÍ·¶ş¼¶Ö¸Õë
+  è¾“å…¥å‚æ•°:
+      IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨å¤´äºŒçº§æŒ‡é’ˆ
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int DestroyINode(INode **iNode)
@@ -230,18 +229,18 @@ int DestroyINode(INode **iNode)
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      ³õÊ¼»¯½ø³Ì½á¹¹Ìå
+  å‡½æ•°è¯´æ˜:
+      åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“
 
-  ÊäÈë²ÎÊı:
-      ½ø³Ì½á¹¹Ìå¶ş¼¶Ö¸Õë
+  è¾“å…¥å‚æ•°:
+      è¿›ç¨‹ç»“æ„ä½“äºŒçº§æŒ‡é’ˆ
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int InitPNode(PNode **pNode)
 {
-	if (NULL != *pNode)     //Èç¹ûµ±Ç°½ø³Ì½á¹¹Ìå²»Îª¿Õ,ÔòÊÍ·ÅºóÔÙÖØĞÂÉêÇë
+	if (NULL != *pNode)     //å¦‚æœå½“å‰è¿›ç¨‹ç»“æ„ä½“ä¸ä¸ºç©º,åˆ™é‡Šæ”¾åå†é‡æ–°ç”³è¯·
 	{
 		DestroyPNode(pNode);
 	}
@@ -254,13 +253,13 @@ int InitPNode(PNode **pNode)
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      ³õÊ¼»¯IAT±íÏî½á¹¹Ìå
+  å‡½æ•°è¯´æ˜:
+      åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“
 
-  ÊäÈë²ÎÊı:
-      IAT±íÏî½á¹¹Ìå¶ş¼¶Ö¸Õë
+  è¾“å…¥å‚æ•°:
+      IATè¡¨é¡¹ç»“æ„ä½“äºŒçº§æŒ‡é’ˆ
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int InitINode(INode **iNode)
@@ -283,77 +282,77 @@ int InitINode(INode **iNode)
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      ĞŞ¸ÄÖÕ¶Ë×ÖÌåÑÕÉ«,¸ß4Î»Îª±³¾°,µÍËÄÎ»ÎªÇ°¾°
+  å‡½æ•°è¯´æ˜:
+      ä¿®æ”¹ç»ˆç«¯å­—ä½“é¢œè‰²,é«˜4ä½ä¸ºèƒŒæ™¯,ä½å››ä½ä¸ºå‰æ™¯
 
-  ÊäÈë²ÎÊı:
-      ÑÕÉ«²ÎÊı
+  è¾“å…¥å‚æ•°:
+      é¢œè‰²å‚æ•°
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */ 
 void SetColor(unsigned short mColor)
 {  
-    HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);          //»ñµÃ»º³åÇø¾ä±ú  
-    SetConsoleTextAttribute(hCon,mColor);//ÉèÖÃÎÄ±¾¼°±³¾°ÑÕÉ«£¬¿ÉÒÔÊ¹ÓÃcolor -?²é¿´  
+    HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);          //è·å¾—ç¼“å†²åŒºå¥æŸ„  
+    SetConsoleTextAttribute(hCon,mColor);//è®¾ç½®æ–‡æœ¬åŠèƒŒæ™¯é¢œè‰²ï¼Œå¯ä»¥ä½¿ç”¨color -?æŸ¥çœ‹  
 }; 
 
 /*
-  º¯ÊıËµÃ÷:
-      ÏÔÊ¾°ïÖúĞÅÏ¢
+  å‡½æ•°è¯´æ˜:
+      æ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯
 
-  ÊäÈë²ÎÊı:
+  è¾“å…¥å‚æ•°:
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int ShowHelp(void)
 {
-	printf("help ÏÔÊ¾°ïÖúĞÅÏ¢\n");
-	printf("ls ²é¿´½ø³ÌÁĞ±í\n");
-	printf("info PID ²é¿´½ø³ÌIATº¯ÊıÁĞ±í\n");
-	printf("IATHook º¯ÊıĞòºÅ IAT hooking Ñ¡¶¨º¯Êı\n");
-	printf("InlineHook º¯ÊıĞòºÅ inline hooking Ñ¡¶¨º¯Êı\n");
-	printf("exit ÍË³ö³ÌĞò\n");
+	printf("help æ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯\n");
+	printf("ls æŸ¥çœ‹è¿›ç¨‹åˆ—è¡¨\n");
+	printf("info PID æŸ¥çœ‹è¿›ç¨‹IATå‡½æ•°åˆ—è¡¨\n");
+	printf("IATHook å‡½æ•°åºå· IAT hooking é€‰å®šå‡½æ•°\n");
+	printf("InlineHook å‡½æ•°åºå· inline hooking é€‰å®šå‡½æ•°\n");
+	printf("exit é€€å‡ºç¨‹åº\n");
 
 	return 0;
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      Ö÷ÒªÓÃÓÚ»ñÈ¡½ø³Ìµ÷ÊÔÈ¨ÏŞ(lpName = SE_DEBUG_NAME)
+  å‡½æ•°è¯´æ˜:
+      ä¸»è¦ç”¨äºè·å–è¿›ç¨‹è°ƒè¯•æƒé™(lpName = SE_DEBUG_NAME)
 
-  ÊäÈë²ÎÊı:
-      IAT±íÏî½á¹¹Ìå¶ş¼¶Ö¸Õë
+  è¾“å…¥å‚æ•°:
+      IATè¡¨é¡¹ç»“æ„ä½“äºŒçº§æŒ‡é’ˆ
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int EnableDebugPriv(const LPCTSTR lpName)
 {
-    HANDLE hToken;        //½ø³ÌÁîÅÆ¾ä±ú
-    TOKEN_PRIVILEGES tp;  //TOKEN_PRIVILEGES½á¹¹Ìå£¬ÆäÖĞ°üº¬Ò»¸ö¡¾ÀàĞÍ+²Ù×÷¡¿µÄÈ¨ÏŞÊı×é
-    LUID luid;            //ÉÏÊö½á¹¹ÌåÖĞµÄÀàĞÍÖµ
+    HANDLE hToken;        //è¿›ç¨‹ä»¤ç‰Œå¥æŸ„
+    TOKEN_PRIVILEGES tp;  //TOKEN_PRIVILEGESç»“æ„ä½“ï¼Œå…¶ä¸­åŒ…å«ä¸€ä¸ªã€ç±»å‹+æ“ä½œã€‘çš„æƒé™æ•°ç»„
+    LUID luid;            //ä¸Šè¿°ç»“æ„ä½“ä¸­çš„ç±»å‹å€¼
 
-    //´ò¿ª½ø³ÌÁîÅÆ»·
-    //GetCurrentProcess()»ñÈ¡µ±Ç°½ø³ÌµÄÎ±¾ä±ú£¬Ö»»áÖ¸Ïòµ±Ç°½ø³Ì»òÕßÏß³Ì¾ä±ú£¬ËæÊ±±ä»¯
+    //æ‰“å¼€è¿›ç¨‹ä»¤ç‰Œç¯
+    //GetCurrentProcess()è·å–å½“å‰è¿›ç¨‹çš„ä¼ªå¥æŸ„ï¼Œåªä¼šæŒ‡å‘å½“å‰è¿›ç¨‹æˆ–è€…çº¿ç¨‹å¥æŸ„ï¼Œéšæ—¶å˜åŒ–
     if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES|TOKEN_QUERY, &hToken))
     {
        printf("OpenProcessToken error\n");
        return -1;
     }
 
-    //»ñµÃ±¾µØ½ø³ÌlpNameËù´ú±íµÄÈ¨ÏŞÀàĞÍµÄ¾Ö²¿Î¨Ò»ID
+    //è·å¾—æœ¬åœ°è¿›ç¨‹lpNameæ‰€ä»£è¡¨çš„æƒé™ç±»å‹çš„å±€éƒ¨å”¯ä¸€ID
     if (!LookupPrivilegeValue(NULL, lpName, &luid))
     {
        printf("LookupPrivilegeValue error\n");
     }
 
-    tp.PrivilegeCount = 1;                               //È¨ÏŞÊı×éÖĞÖ»ÓĞÒ»¸ö¡°ÔªËØ¡±
-    tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;  //È¨ÏŞ²Ù×÷
-    tp.Privileges[0].Luid = luid;                        //È¨ÏŞÀàĞÍ
+    tp.PrivilegeCount = 1;                               //æƒé™æ•°ç»„ä¸­åªæœ‰ä¸€ä¸ªâ€œå…ƒç´ â€
+    tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;  //æƒé™æ“ä½œ
+    tp.Privileges[0].Luid = luid;                        //æƒé™ç±»å‹
 
-    //µ÷Õû½ø³ÌÈ¨ÏŞ
+    //è°ƒæ•´è¿›ç¨‹æƒé™
     if (!AdjustTokenPrivileges(hToken, 0, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
     {
        printf("AdjustTokenPrivileges error!\n");
@@ -365,57 +364,57 @@ int EnableDebugPriv(const LPCTSTR lpName)
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      »ñÈ¡½ø³ÌÁĞ±í
+  å‡½æ•°è¯´æ˜:
+      è·å–è¿›ç¨‹åˆ—è¡¨
 
-  ÊäÈë²ÎÊı:
-      ½ø³Ì½á¹¹Ìå¶ş¼¶Ö¸Õë
+  è¾“å…¥å‚æ•°:
+      è¿›ç¨‹ç»“æ„ä½“äºŒçº§æŒ‡é’ˆ
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int GetProcessInfo(PNode **pNode)
 {
-	HANDLE hProcess;                        //½ø³Ì¾ä±ú
-	HANDLE hModule;                         //Ä£¿é¾ä±ú
-	BOOL bProcess = FALSE;                  //»ñÈ¡½ø³ÌĞÅÏ¢µÄº¯Êı·µ»ØÖµ
-	BOOL bModule = FALSE;                   //»ñÈ¡Ä£¿éĞÅÏ¢µÄº¯Êı·µ»ØÖµ
-	PNode *newPNode = NULL;                 //ĞÂµÄ½ø³Ì½á¹¹Ìå
-	PNode *bkPNode = NULL;                  //½ø³Ì½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
+	HANDLE hProcess;                        //è¿›ç¨‹å¥æŸ„
+	HANDLE hModule;                         //æ¨¡å—å¥æŸ„
+	BOOL bProcess = FALSE;                  //è·å–è¿›ç¨‹ä¿¡æ¯çš„å‡½æ•°è¿”å›å€¼
+	BOOL bModule = FALSE;                   //è·å–æ¨¡å—ä¿¡æ¯çš„å‡½æ•°è¿”å›å€¼
+	PNode *newPNode = NULL;                 //æ–°çš„è¿›ç¨‹ç»“æ„ä½“
+	PNode *bkPNode = NULL;                  //è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
 
-	InitPNode(pNode);                       //³õÊ¼»¯½ø³Ì½á¹¹ÌåÁ´±íÍ·Ö¸Õë
-	bkPNode = *pNode;                       //³õÊ¼»¯½ø³Ì½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
+	InitPNode(pNode);                       //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨å¤´æŒ‡é’ˆ
+	bkPNode = *pNode;                       //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
 
-	if (EnableDebugPriv(SE_DEBUG_NAME))     //»ñÈ¡½ø³Ìµ÷ÊÔÈ¨ÏŞ
+	if (EnableDebugPriv(SE_DEBUG_NAME))     //è·å–è¿›ç¨‹è°ƒè¯•æƒé™
     {
 		printf("Add Privilege error\n");
 
 		return -1;
     }
 
-    hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);//»ñÈ¡½ø³Ì¿ìÕÕ
+    hProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);//è·å–è¿›ç¨‹å¿«ç…§
     if (hProcess == INVALID_HANDLE_VALUE)
     {
-        printf("»ñÈ¡½ø³Ì¿ìÕÕÊ§°Ü\n");
+        printf("è·å–è¿›ç¨‹å¿«ç…§å¤±è´¥\n");
         exit(1);
     }
 
-    bProcess = Process32First(hProcess,&bkPNode->pe32);      //»ñÈ¡µÚÒ»¸ö½ø³ÌĞÅÏ¢
-    while (bProcess)                                         //Ñ­»·»ñÈ¡ÆäÓà½ø³ÌĞÅÏ¢
+    bProcess = Process32First(hProcess,&bkPNode->pe32);      //è·å–ç¬¬ä¸€ä¸ªè¿›ç¨‹ä¿¡æ¯
+    while (bProcess)                                         //å¾ªç¯è·å–å…¶ä½™è¿›ç¨‹ä¿¡æ¯
     {
-		if (0 != bkPNode->pe32.th32ParentProcessID)          //»ñÈ¡½ø³ÌPID²»Îª0µÄÄ£¿éĞÅÏ¢
+		if (0 != bkPNode->pe32.th32ParentProcessID)          //è·å–è¿›ç¨‹PIDä¸ä¸º0çš„æ¨¡å—ä¿¡æ¯
 		{
-			hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,bkPNode->pe32.th32ProcessID);  //»ñÈ¡Ä£¿é¿ìÕÕ
+			hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,bkPNode->pe32.th32ProcessID);  //è·å–æ¨¡å—å¿«ç…§
 			if (hModule != INVALID_HANDLE_VALUE)
 			{
-				bModule = Module32First(hModule,&bkPNode->me32);   //»ñÈ¡µÚÒ»¸öÄ£¿éĞÅÏ¢,¼´½ø³ÌÏàÓ¦¿ÉÖ´ĞĞÎÄ¼şµÄĞÅÏ¢
+				bModule = Module32First(hModule,&bkPNode->me32);   //è·å–ç¬¬ä¸€ä¸ªæ¨¡å—ä¿¡æ¯,å³è¿›ç¨‹ç›¸åº”å¯æ‰§è¡Œæ–‡ä»¶çš„ä¿¡æ¯
 				CloseHandle(hModule);
 			}
 		}
 
 		newPNode = NULL;
 		InitPNode(&newPNode);
-        bProcess = Process32Next(hProcess,&newPNode->pe32);  //¼ÌĞø»ñÈ¡ÆäËû½ø³ÌĞÅÏ¢
+        bProcess = Process32Next(hProcess,&newPNode->pe32);  //ç»§ç»­è·å–å…¶ä»–è¿›ç¨‹ä¿¡æ¯
 		if (0 == bProcess)
 		{
 			DestroyPNode(&newPNode);
@@ -430,58 +429,58 @@ int GetProcessInfo(PNode **pNode)
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      »ñÈ¡½ø³ÌIATÁĞ±í
+  å‡½æ•°è¯´æ˜:
+      è·å–è¿›ç¨‹IATåˆ—è¡¨
 
-  ÊäÈë²ÎÊı:
-	  INode **iNode    :  IAT±íÏî½á¹¹Ìå¶ş¼¶Ö¸Õë
-	  PNode *pNode     :  ½ø³Ì½á¹¹ÌåÖ¸Õë
-	  unsigned int pid :  ½ø³ÌPID
+  è¾“å…¥å‚æ•°:
+	  INode **iNode    :  IATè¡¨é¡¹ç»“æ„ä½“äºŒçº§æŒ‡é’ˆ
+	  PNode *pNode     :  è¿›ç¨‹ç»“æ„ä½“æŒ‡é’ˆ
+	  unsigned int pid :  è¿›ç¨‹PID
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 {
-	unsigned char buff[1025] = {0};              //ÓÃÓÚÁÙÊ±±£´æ¶ÁÈ¡µÄbuff
-	unsigned char nameAddrBuff[513] = {0};       //IAT±íÏîº¯ÊıÃûµØÖ·ÁĞ±í
-	unsigned char addrBuff[513] = {0};           //IAT±íÏîº¯ÊıµØÖ·ÁĞ±í
-	char dllName[NAMESIZE] = {0};                //IAT±íÏîËùÊôdllÃû
-	unsigned char nameBuff[NAMESIZE] = {0};      //IAT±íÏîº¯ÊıÃû
+	unsigned char buff[1025] = {0};              //ç”¨äºä¸´æ—¶ä¿å­˜è¯»å–çš„buff
+	unsigned char nameAddrBuff[513] = {0};       //IATè¡¨é¡¹å‡½æ•°ååœ°å€åˆ—è¡¨
+	unsigned char addrBuff[513] = {0};           //IATè¡¨é¡¹å‡½æ•°åœ°å€åˆ—è¡¨
+	char dllName[NAMESIZE] = {0};                //IATè¡¨é¡¹æ‰€å±dllå
+	unsigned char nameBuff[NAMESIZE] = {0};      //IATè¡¨é¡¹å‡½æ•°å
 
-	PNode *bkPNode = pNode;           //³õÊ¼»¯½ø³Ì½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-	INode *bkINode = NULL;            //¶¨ÒåIAT±íÏî½á¹¹Ìå²Ù×÷Ö¸Õë
-	INode *newINode = NULL;           //¶¨ÒåĞÂµÄIAT±íÏî½á¹¹ÌåÖ¸Õë
+	PNode *bkPNode = pNode;           //åˆå§‹åŒ–è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+	INode *bkINode = NULL;            //å®šä¹‰IATè¡¨é¡¹ç»“æ„ä½“æ“ä½œæŒ‡é’ˆ
+	INode *newINode = NULL;           //å®šä¹‰æ–°çš„IATè¡¨é¡¹ç»“æ„ä½“æŒ‡é’ˆ
 
-	HANDLE handle = NULL;             //³õÊ¼»¯½ø³Ì¾ä±ú
+	HANDLE handle = NULL;             //åˆå§‹åŒ–è¿›ç¨‹å¥æŸ„
 
-	LPCVOID addr = 0;                 //µØÖ·Ö¸Õë
-	int offset = 0;                   //±£´æPE½á¹¹Æ«ÒÆ
-	LPDWORD readBuffCount = 0;        //±£´æReadProcessMemoryÊµ¼Ê¶ÁÈ¡µÄ×Ö½ÚÊı
-	int flag = 0;                     //º¯Êıµ÷ÓÃ±ê¼Ç
-	int error = 0;                    //º¯Êıµ÷ÓÃ³ö´í´úÂë
-	int order = 0;                    //º¯ÊıÔÚÁĞ±íÖĞµÄĞòºÅ
-	int IATaddr = 0;                  //IAT±íµÄµØÖ·
+	LPCVOID addr = 0;                 //åœ°å€æŒ‡é’ˆ
+	int offset = 0;                   //ä¿å­˜PEç»“æ„åç§»
+	LPDWORD readBuffCount = 0;        //ä¿å­˜ReadProcessMemoryå®é™…è¯»å–çš„å­—èŠ‚æ•°
+	int flag = 0;                     //å‡½æ•°è°ƒç”¨æ ‡è®°
+	int error = 0;                    //å‡½æ•°è°ƒç”¨å‡ºé”™ä»£ç 
+	int order = 0;                    //å‡½æ•°åœ¨åˆ—è¡¨ä¸­çš„åºå·
+	int IATaddr = 0;                  //IATè¡¨çš„åœ°å€
 
-	int descriptorBaseAddr = 0;       //IMAGE_IMPORT_DESCRIPTOR½á¹¹ÌåÊ×µØÖ·
-	int dllNameAddr = 0;              //dllÃûµØÖ·
-	int funcNameAddr = 0;             //º¯ÊıÃûÁĞ±íµØÖ·
-	int funcAddrAddr = 0;             //º¯ÊıµØÖ·ÁĞ±íµØÖ·
-	int funcName = 0;                 //º¯ÊıÃûµØÖ·
+	int descriptorBaseAddr = 0;       //IMAGE_IMPORT_DESCRIPTORç»“æ„ä½“é¦–åœ°å€
+	int dllNameAddr = 0;              //dllååœ°å€
+	int funcNameAddr = 0;             //å‡½æ•°ååˆ—è¡¨åœ°å€
+	int funcAddrAddr = 0;             //å‡½æ•°åœ°å€åˆ—è¡¨åœ°å€
+	int funcName = 0;                 //å‡½æ•°ååœ°å€
 
 
-	int i = 0;                        //Ñ­»·¼ÆÊı
-	int j = 0;                        //Ñ­»·±äÁ¿
+	int i = 0;                        //å¾ªç¯è®¡æ•°
+	int j = 0;                        //å¾ªç¯å˜é‡
 
-	InitINode(iNode);                 //³õÊ¼»¯IAT±íÏî½á¹¹ÌåÁ´±íÍ·Ö¸Õë
-	bkINode = *iNode;                 //³õÊ¼»¯IAT±íÏî½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
+	InitINode(iNode);                 //åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨å¤´æŒ‡é’ˆ
+	bkINode = *iNode;                 //åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
 
-	if (NULL == bkPNode)              //Èç¹û½ø³ÌÁ´±íÎª¿Õ,Ôò³ö´íÍË³ö
+	if (NULL == bkPNode)              //å¦‚æœè¿›ç¨‹é“¾è¡¨ä¸ºç©º,åˆ™å‡ºé”™é€€å‡º
 	{
 		return -1;
 	}
 
-	for (;;)                          //Ñ­»·±éÀú½ø³Ì½á¹¹ÌåÖĞÓëËù¸ø½ø³ÌPIDÏà·û½ø³Ì½á¹¹Ìå
+	for (;;)                          //å¾ªç¯éå†è¿›ç¨‹ç»“æ„ä½“ä¸­ä¸æ‰€ç»™è¿›ç¨‹PIDç›¸ç¬¦è¿›ç¨‹ç»“æ„ä½“
 	{
 		if (pid == bkPNode->pe32.th32ProcessID)
 		{
@@ -500,39 +499,39 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 		}
 	}
 
-	if (EnableDebugPriv(SE_DEBUG_NAME))    //»ñÈ¡½ø³Ìµ÷ÊÔÈ¨ÏŞ
+	if (EnableDebugPriv(SE_DEBUG_NAME))    //è·å–è¿›ç¨‹è°ƒè¯•æƒé™
     {
 		printf("Add Privilege error\n");
 
 		return -1;
     }
 
-	handle=OpenProcess(PROCESS_ALL_ACCESS,1,pid);  //»ñÈ¡½ø³Ì¾ä±ú
+	handle=OpenProcess(PROCESS_ALL_ACCESS,1,pid);  //è·å–è¿›ç¨‹å¥æŸ„
 	if (handle == INVALID_HANDLE_VALUE)
 	{
 		return -1;
 	}
 
-	addr = bkPNode->me32.modBaseAddr;              //»ñÈ¡½ø³Ì¼ÓÔØ»ùÖ·
-	flag = ReadProcessMemory(handle, addr, buff, 512, readBuffCount); // ¶ÁÈ¡½ø³ÌÇ°512×Ö½ÚĞÅÏ¢
+	addr = bkPNode->me32.modBaseAddr;              //è·å–è¿›ç¨‹åŠ è½½åŸºå€
+	flag = ReadProcessMemory(handle, addr, buff, 512, readBuffCount); // è¯»å–è¿›ç¨‹å‰512å­—èŠ‚ä¿¡æ¯
 	offset = buff[60] + buff[61] * 256 + buff[62] * 256 * 256 + buff[63] * 256 * 256 * 256;
 	offset = offset + 0x18;
 	offset = offset + 0x60;
 	offset = offset + 0x8;
 	IATaddr = buff[offset] + buff[offset+1] *256 + buff[offset+2] * 256* 256 + buff[offset+3] * 256 * 256 * 256;
-	addr = bkPNode->me32.modBaseAddr + IATaddr;    //¸ù¾İPEÎÄ¼ş½á¹¹»ñÈ¡½ø³ÌIAT±íµØÖ·
+	addr = bkPNode->me32.modBaseAddr + IATaddr;    //æ ¹æ®PEæ–‡ä»¶ç»“æ„è·å–è¿›ç¨‹IATè¡¨åœ°å€
 
-	flag = ReadProcessMemory(handle, addr, buff, 1024, readBuffCount); //¶ÁÈ¡½ø³ÌIAT±íËùÔÚÄÚ´æµÄ1024×Ö½ÚĞÅÏ¢
+	flag = ReadProcessMemory(handle, addr, buff, 1024, readBuffCount); //è¯»å–è¿›ç¨‹IATè¡¨æ‰€åœ¨å†…å­˜çš„1024å­—èŠ‚ä¿¡æ¯
 
 	descriptorBaseAddr = 0;
 	for (order = 0;;)
 	{
-		//¸ù¾İIMAGE_INPORT_DESCRIPTOR½á¹¹,»ñÈ¡ÏàÓ¦dllÃûµØÖ·,º¯ÊıÃûµØÖ·ÁĞ±íÊ×µØÖ·,º¯ÊıµØÖ·ÁĞ±íÊ×µØÖ·
+		//æ ¹æ®IMAGE_INPORT_DESCRIPTORç»“æ„,è·å–ç›¸åº”dllååœ°å€,å‡½æ•°ååœ°å€åˆ—è¡¨é¦–åœ°å€,å‡½æ•°åœ°å€åˆ—è¡¨é¦–åœ°å€
 		funcNameAddr = buff[descriptorBaseAddr+0] + buff[descriptorBaseAddr+1] *256 + buff[descriptorBaseAddr+2] * 256* 256 + buff[descriptorBaseAddr+3] * 256 * 256 * 256;
 		dllNameAddr = buff[descriptorBaseAddr+12] + buff[descriptorBaseAddr+13] *256 + buff[descriptorBaseAddr+14] * 256* 256 + buff[descriptorBaseAddr+15] * 256 * 256 * 256;
 		funcAddrAddr = buff[descriptorBaseAddr+16] + buff[descriptorBaseAddr+17] *256 + buff[descriptorBaseAddr+18] * 256* 256 + buff[descriptorBaseAddr+19] * 256 * 256 * 256;
 
-		//¶ÁÈ¡º¯ÊıÃûµØÖ·ÁĞ±í
+		//è¯»å–å‡½æ•°ååœ°å€åˆ—è¡¨
 		flag = ReadProcessMemory(handle, bkPNode->me32.modBaseAddr+funcNameAddr, nameAddrBuff, 512, readBuffCount);
 		if (0 == flag)
 		{
@@ -541,7 +540,7 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 			return -1;
 		}
 
-		//¶ÁÈ¡º¯ÊıµØÖ·ÁĞ±í
+		//è¯»å–å‡½æ•°åœ°å€åˆ—è¡¨
 		flag = ReadProcessMemory(handle, bkPNode->me32.modBaseAddr+funcAddrAddr, addrBuff, 512, readBuffCount);
 		if (0 == flag)
 		{
@@ -550,7 +549,7 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 			return -1;
 		}
 
-		//¶ÁÈ¡dllÎÄ¼şÃû
+		//è¯»å–dllæ–‡ä»¶å
 		flag = ReadProcessMemory(handle, bkPNode->me32.modBaseAddr+dllNameAddr, nameBuff, NAMESIZE-1, readBuffCount);
 		if (0 == flag)
 		{
@@ -572,25 +571,25 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 		dllName[j] = 0;
 
 
-		for (i = 0;;)  //Ñ­»·»ñÈ¡IAT±íÏî
+		for (i = 0;;)  //å¾ªç¯è·å–IATè¡¨é¡¹
 		{
-			bkINode->order = order;                //º¯ÊıĞòºÅ
+			bkINode->order = order;                //å‡½æ•°åºå·
 			order++;
 
-			strcpy(bkINode->dllname,dllName);      //º¯ÊıËùÊôdllÃû
+			strcpy(bkINode->dllname,dllName);      //å‡½æ•°æ‰€å±dllå
 
-			bkINode->addrOfAddr = funcAddrAddr + i;  //º¯ÊıµØÖ·ËùÔÚÄÚ´æµØÖ·
+			bkINode->addrOfAddr = funcAddrAddr + i;  //å‡½æ•°åœ°å€æ‰€åœ¨å†…å­˜åœ°å€
 
-			//»ñÈ¡º¯ÊıÃûËùÔÚÄÚ´æÊ×µØÖ·
+			//è·å–å‡½æ•°åæ‰€åœ¨å†…å­˜é¦–åœ°å€
 			funcName = nameAddrBuff[i] + nameAddrBuff[i+1]*256 + nameAddrBuff[i+2]*256*256 + nameAddrBuff[i+3]*256*256*256;
-			if (0x80000000 == (0x80000000&funcName)) //Èç¹ûº¯ÊıÃûËùÔÚµØÖ·×î¸ßÎ»Îª1,ÔòËµÃ÷ÊÇÒÔĞòºÅµ¼ÈëµÄ
+			if (0x80000000 == (0x80000000&funcName)) //å¦‚æœå‡½æ•°åæ‰€åœ¨åœ°å€æœ€é«˜ä½ä¸º1,åˆ™è¯´æ˜æ˜¯ä»¥åºå·å¯¼å…¥çš„
 			{
 				sprintf(bkINode->name,"Oridinal : %#0 8X",0x7fffffff&funcName);
-				bkINode->address = funcName;       //ÕâÖÖµ¼Èë·½Ê½ÎÒ²»ÖªµÀµØÖ·ÊÇ¶àÉÙ
+				bkINode->address = funcName;       //è¿™ç§å¯¼å…¥æ–¹å¼æˆ‘ä¸çŸ¥é“åœ°å€æ˜¯å¤šå°‘
 			}
 			else
 			{
-				//¶ÁÈ¡º¯ÊıÃû
+				//è¯»å–å‡½æ•°å
 				flag = ReadProcessMemory(handle, bkPNode->me32.modBaseAddr+funcName, nameBuff, NAMESIZE-1, readBuffCount);
 				if (0 == flag)
 				{
@@ -599,7 +598,7 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 					return -1;
 				}
 
-				//»ñµÃº¯ÊıÃû
+				//è·å¾—å‡½æ•°å
 				for (j = 0; j < NAMESIZE-1; j++)
 				{
 					if (0 == nameBuff[j+2])
@@ -613,19 +612,19 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 				}
 				bkINode->name[j] = 0;
 
-				//»ñÈ¡º¯ÊıÔÚÄÚ´æÖĞµÄµØÖ·
+				//è·å–å‡½æ•°åœ¨å†…å­˜ä¸­çš„åœ°å€
 				bkINode->address = addrBuff[i] + addrBuff[i+1]*256 + addrBuff[i+2]*256*256 + addrBuff[i+3]*256*256*256;
 			}
 
-			i = i + 4;    //Èç¹ûÏÂ¸öº¯ÊıÃûµØÖ·Îª0,ÔòËµÃ÷Õâ¸ödllµÄµ¼Èëº¯Êı½áÊøÁË
+			i = i + 4;    //å¦‚æœä¸‹ä¸ªå‡½æ•°ååœ°å€ä¸º0,åˆ™è¯´æ˜è¿™ä¸ªdllçš„å¯¼å…¥å‡½æ•°ç»“æŸäº†
 			if (0 == nameAddrBuff[i] && 0 == nameAddrBuff[i+1] && 0 == nameAddrBuff[i+2] && 0 == nameAddrBuff[i+3])
 			{
 				break;
 			}
-			if (512 == i)  //Èç¹ûº¯ÊıÃûµØÖ·ÁĞ±í³¬¹ı512×Ö½Ú,ÔòÖØĞÂ»ñÈ¡º¯ÊıÃûµØÖ·ÁĞ±íºÍº¯ÊıµØÖ·ÁĞ±í
+			if (512 == i)  //å¦‚æœå‡½æ•°ååœ°å€åˆ—è¡¨è¶…è¿‡512å­—èŠ‚,åˆ™é‡æ–°è·å–å‡½æ•°ååœ°å€åˆ—è¡¨å’Œå‡½æ•°åœ°å€åˆ—è¡¨
 			{
 				i = 0;
-				funcNameAddr += 512;       //Ö¸ÕëÏòÇ°ÒÆ51×Ö½Ú
+				funcNameAddr += 512;       //æŒ‡é’ˆå‘å‰ç§»51å­—èŠ‚
 				funcAddrAddr += 512;
 				flag = ReadProcessMemory(handle, bkPNode->me32.modBaseAddr+funcNameAddr, nameAddrBuff, 512, readBuffCount);
 				if (0 == flag)
@@ -650,7 +649,7 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 			newINode = NULL;
 		}
 
-		descriptorBaseAddr += 20; //Èç¹ûÏÂÒ»¸öIMAGE_IMPORT_DESCRIPTOR½á¹¹ÌåÎª¿Õ,ÔòÍË³ö
+		descriptorBaseAddr += 20; //å¦‚æœä¸‹ä¸€ä¸ªIMAGE_IMPORT_DESCRIPTORç»“æ„ä½“ä¸ºç©º,åˆ™é€€å‡º
 		if (0 == buff[descriptorBaseAddr] && 0 == buff[descriptorBaseAddr+1] && 0 == buff[descriptorBaseAddr+2] && 0 == buff[descriptorBaseAddr+3])
 		{
 			break;
@@ -666,29 +665,29 @@ int GetIAT(INode **iNode, PNode *pNode, unsigned int pid)
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      hooking Ä³¸öIAT±íÖĞµÄº¯Êı
+  å‡½æ•°è¯´æ˜:
+      hooking æŸä¸ªIATè¡¨ä¸­çš„å‡½æ•°
 
-  ÊäÈë²ÎÊı:
-	  INode **iNode    :  IAT±íÏî½á¹¹Ìå¶ş¼¶Ö¸Õë
-	  PNode *pNode     :  ½ø³Ì½á¹¹ÌåÖ¸Õë
-	  int order        :  º¯ÊıĞòºÅ
-	  unsigned int pid :  ½ø³ÌPID
+  è¾“å…¥å‚æ•°:
+	  INode **iNode    :  IATè¡¨é¡¹ç»“æ„ä½“äºŒçº§æŒ‡é’ˆ
+	  PNode *pNode     :  è¿›ç¨‹ç»“æ„ä½“æŒ‡é’ˆ
+	  int order        :  å‡½æ•°åºå·
+	  unsigned int pid :  è¿›ç¨‹PID
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 {
-	char addr[5] = {0};            //±£´æËÄ×Ö½ÚµØÖ·ĞÅÏ¢
+	char addr[5] = {0};            //ä¿å­˜å››å­—èŠ‚åœ°å€ä¿¡æ¯
 
-	INode *bkINode = iNode;        //³õÊ¼»¯IAT±íÏî½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-	HANDLE hProcess;               //½ø³Ì¾ä±ú
-	DWORD dwHasWrite;              //Êµ¼Ê¶ÁÈ¡µÄ×Ö½ÚÊı
-	LPVOID lpRemoteBuf;            //ĞÂÉêÇëµÄÄÚ´æ¿Õ¼äÖ¸Õë
-	int temp = 0;                  //ÁÙÊ±±äÁ¿
+	INode *bkINode = iNode;        //åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+	HANDLE hProcess;               //è¿›ç¨‹å¥æŸ„
+	DWORD dwHasWrite;              //å®é™…è¯»å–çš„å­—èŠ‚æ•°
+	LPVOID lpRemoteBuf;            //æ–°ç”³è¯·çš„å†…å­˜ç©ºé—´æŒ‡é’ˆ
+	int temp = 0;                  //ä¸´æ—¶å˜é‡
 
-	//Êı¾İ
+	//æ•°æ®
 	char data[] = "\x74\x65\x73\x74\x00\xCC\xCC\xCC"
 		"\xD7\xE9\xB3\xA4\x20\x3A\x20\xBA"
 		"\xCE\xC4\xDC\xB1\xF3\x20\x32\x30"
@@ -714,7 +713,7 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		"\x5B\x5A\x59\x58\x9D\xB8\xEA\x07"
 		"\xD5\x7C\xFF\xE0";
 
-	//Ñ­»·±éÀúIAT±íÏî½á¹¹ÌåÁ´±í,Ñ°ÕÒÓëËù¸øº¯ÊıĞòºÅÏàÍ¬µÄIAT±íÏî½á¹¹Ìå
+	//å¾ªç¯éå†IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨,å¯»æ‰¾ä¸æ‰€ç»™å‡½æ•°åºå·ç›¸åŒçš„IATè¡¨é¡¹ç»“æ„ä½“
 	if (NULL == iNode)
 	{
 		return -1;
@@ -745,7 +744,7 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		}
 	}
 
-	//Ñ­»·±éÀúIAT±íÏî½á¹¹ÌåÁ´±í,Ñ°ÕÒMessageBoxAµÄIAT±íÏî½á¹¹Ìå
+	//å¾ªç¯éå†IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨,å¯»æ‰¾MessageBoxAçš„IATè¡¨é¡¹ç»“æ„ä½“
 	for (;;)
 	{
 		if (NULL == bkINode->next)
@@ -772,7 +771,7 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		}
 	}
 
-	//Ñ­»·±éÀú½ø³Ì½á¹¹ÌåÁ´±í,Ñ°ÕÒÓëËù¸øº¯ÊıËùÊô½ø³ÌPIDÏàÍ¬µÄ½ø³Ì½á¹¹Ìå
+	//å¾ªç¯éå†è¿›ç¨‹ç»“æ„ä½“é“¾è¡¨,å¯»æ‰¾ä¸æ‰€ç»™å‡½æ•°æ‰€å±è¿›ç¨‹PIDç›¸åŒçš„è¿›ç¨‹ç»“æ„ä½“
 	if (NULL == pNode)
 	{
 		return -1;
@@ -796,21 +795,21 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		}
 	}
 
-	if (EnableDebugPriv(SE_DEBUG_NAME))   //»ñÈ¡µ÷ÊÔÈ¨ÏŞ
+	if (EnableDebugPriv(SE_DEBUG_NAME))   //è·å–è°ƒè¯•æƒé™
     {
 		fprintf(stderr,"Add Privilege error\n");
 
 		return -1;
     }
 
-	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid); //»ñÈ¡½ø³Ì¾ä±ú
+	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid); //è·å–è¿›ç¨‹å¥æŸ„
 	if(hProcess == NULL) 
     { 
-        fprintf(stderr,"\n»ñÈ¡½ø³Ì¾ä±ú´íÎó%d",GetLastError()); 
+        fprintf(stderr,"\nè·å–è¿›ç¨‹å¥æŸ„é”™è¯¯%d",GetLastError()); 
         return -1; 
     }
  
-	//ÉêÇë120×Ö½ÚµÄÊı¾İ¿Õ¼ä,²¢Ğ´ÈëÎÒÃÇĞèÒªµÄÊı¾İ
+	//ç”³è¯·120å­—èŠ‚çš„æ•°æ®ç©ºé—´,å¹¶å†™å…¥æˆ‘ä»¬éœ€è¦çš„æ•°æ®
     lpRemoteBuf = VirtualAllocEx(hProcess, NULL, 120, MEM_COMMIT, PAGE_READWRITE);
     if(WriteProcessMemory(hProcess, lpRemoteBuf, data, 120, &dwHasWrite)) 
     { 
@@ -823,28 +822,28 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
  
     }else 
     { 
-        printf("\nĞ´ÈëÔ¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError()); 
+        printf("\nå†™å…¥è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError()); 
         CloseHandle(hProcess); 
         return -1; 
     }
 
-	temp = (int)lpRemoteBuf;   //Êı¾İËùÔÚÊ×µØÖ·
+	temp = (int)lpRemoteBuf;   //æ•°æ®æ‰€åœ¨é¦–åœ°å€
 	addr[0] = temp&0xff;
 	addr[1] = temp>>8&0xff;
 	addr[2] = temp>>16&0xff;
 	addr[3] = temp>>24&0xff;
 
-	shellcode[11] = addr[0];  //"test" µÄµØÖ·
+	shellcode[11] = addr[0];  //"test" çš„åœ°å€
 	shellcode[12] = addr[1];
 	shellcode[13] = addr[2];
 	shellcode[14] = addr[3];
 
-	shellcode[16] = addr[0]+8;//"ËùÒªÏÔÊ¾µÄ×Ö·û´®Ê×µØÖ·"
+	shellcode[16] = addr[0]+8;//"æ‰€è¦æ˜¾ç¤ºçš„å­—ç¬¦ä¸²é¦–åœ°å€"
 	shellcode[17] = addr[1];
 	shellcode[18] = addr[2];
 	shellcode[19] = addr[3];
 
-	temp = (int)bkINode->address; //MessageBoxAµÄµØÖ·
+	temp = (int)bkINode->address; //MessageBoxAçš„åœ°å€
 	addr[0] = temp&0xff;
 	addr[1] = temp>>8&0xff;
 	addr[2] = temp>>16&0xff;
@@ -854,7 +853,7 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 	shellcode[25] = addr[2];
 	shellcode[26] = addr[3];
 
-	temp = (int)iNode->address;  //Ô­º¯ÊıµÄµØÖ·,ÓÃÓÚjmp»ØÔ­À´µÄº¯Êı
+	temp = (int)iNode->address;  //åŸå‡½æ•°çš„åœ°å€,ç”¨äºjmpå›åŸæ¥çš„å‡½æ•°
 	addr[0] = temp&0xff;
 	addr[1] = temp>>8&0xff;
 	addr[2] = temp>>16&0xff;
@@ -864,7 +863,7 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 	shellcode[40] = addr[2];
 	shellcode[41] = addr[3];
 
-	//ÉêÇë44×Ö½ÚµÄ¿É¶Á¿ÉĞ´¿ÉÖ´ĞĞµÄshellcode¿Õ¼ä,²¢Ğ´Èëshellcode
+	//ç”³è¯·44å­—èŠ‚çš„å¯è¯»å¯å†™å¯æ‰§è¡Œçš„shellcodeç©ºé—´,å¹¶å†™å…¥shellcode
     lpRemoteBuf = VirtualAllocEx(hProcess, NULL, 44, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     if(WriteProcessMemory(hProcess, lpRemoteBuf, shellcode, 44, &dwHasWrite)) 
     { 
@@ -877,12 +876,12 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
  
     }else 
     { 
-        printf("\nĞ´ÈëÔ¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError()); 
+        printf("\nå†™å…¥è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError()); 
         CloseHandle(hProcess); 
         return -1; 
     }
 
-	temp = (int)lpRemoteBuf;  //»ñÈ¡shellcodeµÄÊ×µØÖ·,²¢Ìæ»»IAT±íÖĞÏàÓ¦µÄº¯ÊıµØÖ·
+	temp = (int)lpRemoteBuf;  //è·å–shellcodeçš„é¦–åœ°å€,å¹¶æ›¿æ¢IATè¡¨ä¸­ç›¸åº”çš„å‡½æ•°åœ°å€
 	addr[0] = temp&0xff;
 	addr[1] = temp>>8&0xff;
 	addr[2] = temp>>16&0xff;
@@ -893,7 +892,7 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 	}
 	else
 	{
-		printf("\nĞ´ÈëÔ¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError());
+		printf("\nå†™å…¥è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError());
 	}
 		
 	CloseHandle(hProcess); 
@@ -901,30 +900,30 @@ int IATHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 }
 
 /*
-  º¯ÊıËµÃ÷:
-      inline hooking Ä³¸öIAT±íÖĞµÄº¯Êı
+  å‡½æ•°è¯´æ˜:
+      inline hooking æŸä¸ªIATè¡¨ä¸­çš„å‡½æ•°
 
-  ÊäÈë²ÎÊı:
-	  INode **iNode    :  IAT±íÏî½á¹¹Ìå¶ş¼¶Ö¸Õë
-	  PNode *pNode     :  ½ø³Ì½á¹¹ÌåÖ¸Õë
-	  int order        :  º¯ÊıĞòºÅ
-	  unsigned int pid :  ½ø³ÌPID
+  è¾“å…¥å‚æ•°:
+	  INode **iNode    :  IATè¡¨é¡¹ç»“æ„ä½“äºŒçº§æŒ‡é’ˆ
+	  PNode *pNode     :  è¿›ç¨‹ç»“æ„ä½“æŒ‡é’ˆ
+	  int order        :  å‡½æ•°åºå·
+	  unsigned int pid :  è¿›ç¨‹PID
 
-  Êä³ö²ÎÊı:
+  è¾“å‡ºå‚æ•°:
       
 */
 int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 {
-	char addr[5] = {0};      //ÓÃÓÚ±£´æ4×Ö½ÚµÄµØÖ·
-	char buff[6] = {0};      //ÓÃÓÚ±£´æjmp xxxÖ¸ÁîºÍËùÒªhookµÄº¯ÊıÆğÊ¼Îå¸ö×Ö½Ú
+	char addr[5] = {0};      //ç”¨äºä¿å­˜4å­—èŠ‚çš„åœ°å€
+	char buff[6] = {0};      //ç”¨äºä¿å­˜jmp xxxæŒ‡ä»¤å’Œæ‰€è¦hookçš„å‡½æ•°èµ·å§‹äº”ä¸ªå­—èŠ‚
 
-	INode *bkINode = iNode;  //³õÊ¼»¯IAT±íÏî½á¹¹ÌåÁ´±í²Ù×÷Ö¸Õë
-	HANDLE hProcess;         //½ø³Ì¾ä±ú
-	DWORD dwHasWrite;        //Êµ¼ÊĞ´ÈëµÄ×Ö½ÚÊı
-	LPVOID lpRemoteBuf;      //ÉêÇëµÄÄÚ´æÊ×µØÖ·
-	int temp = 0;            //ÁÙÊ±±äÁ¿
+	INode *bkINode = iNode;  //åˆå§‹åŒ–IATè¡¨é¡¹ç»“æ„ä½“é“¾è¡¨æ“ä½œæŒ‡é’ˆ
+	HANDLE hProcess;         //è¿›ç¨‹å¥æŸ„
+	DWORD dwHasWrite;        //å®é™…å†™å…¥çš„å­—èŠ‚æ•°
+	LPVOID lpRemoteBuf;      //ç”³è¯·çš„å†…å­˜é¦–åœ°å€
+	int temp = 0;            //ä¸´æ—¶å˜é‡
 
-	//Êı¾İ
+	//æ•°æ®
 	char data[] = "\x74\x65\x73\x74\x00\xCC\xCC\xCC"
 		"\xD7\xE9\xB3\xA4\x20\x3A\x20\xBA"
 		"\xCE\xC4\xDC\xB1\xF3\x20\x32\x30"
@@ -947,10 +946,10 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		"\x6A\x00\x68\x00\x10\x40\x00\x68"
 		"\x00\x10\x40\x00\x6A\x00\xB8\xEA"
 		"\x07\xD5\x77\xFF\xD0\x5F\x5E\x5D"
-		"\x5B\x5A\x59\x58\x9D\x8b\xff\x55\x8b\xec"  //shellcoÖĞÓĞËùÒªhookingµÄº¯ÊıÇ°Îå¸ö×Ö½ÚÁË
-		"\xe9\x90\x90\x90\x90";                     //ËùÒÔºóÃæjmp »Øµ½µÄÊÇº¯ÊıµÄµÚÁù¸ö×Ö½Ú
+		"\x5B\x5A\x59\x58\x9D\x8b\xff\x55\x8b\xec"  //shellcoä¸­æœ‰æ‰€è¦hookingçš„å‡½æ•°å‰äº”ä¸ªå­—èŠ‚äº†
+		"\xe9\x90\x90\x90\x90";                     //æ‰€ä»¥åé¢jmp å›åˆ°çš„æ˜¯å‡½æ•°çš„ç¬¬å…­ä¸ªå­—èŠ‚
 
-	if (NULL == iNode)         //Èç¹ûIAT±íÏîÁ´±íÎª¿Õ,ÔòÍË³ö
+	if (NULL == iNode)         //å¦‚æœIATè¡¨é¡¹é“¾è¡¨ä¸ºç©º,åˆ™é€€å‡º
 	{
 		return -1;
 	}
@@ -980,7 +979,7 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		}
 	}
 
-	//»ñÈ¡MessageBoxAµÄIAT±íÏî½á¹¹Ìå
+	//è·å–MessageBoxAçš„IATè¡¨é¡¹ç»“æ„ä½“
 	for (;;)
 	{
 		if (NULL == bkINode->next)
@@ -1007,7 +1006,7 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		}
 	}
 
-	//»ñÈ¡ËùÒªhookµÄº¯ÊıËùÊô½ø³Ì½á¹¹Ìå
+	//è·å–æ‰€è¦hookçš„å‡½æ•°æ‰€å±è¿›ç¨‹ç»“æ„ä½“
 	if (NULL == pNode)
 	{
 		return -1;
@@ -1031,7 +1030,7 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		}
 	}
 
-	//»ñÈ¡µ÷ÊÔÈ¨ÏŞ
+	//è·å–è°ƒè¯•æƒé™
 	if (EnableDebugPriv(SE_DEBUG_NAME))
     {
 		fprintf(stderr,"Add Privilege error\n");
@@ -1039,15 +1038,15 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 		return -1;
     }
 
-	//»ñÈ¡½ø³Ì¾ä±ú
+	//è·å–è¿›ç¨‹å¥æŸ„
 	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 	if(hProcess == NULL) 
     { 
-        fprintf(stderr,"\n»ñÈ¡½ø³Ì¾ä±ú´íÎó%d",GetLastError()); 
+        fprintf(stderr,"\nè·å–è¿›ç¨‹å¥æŸ„é”™è¯¯%d",GetLastError()); 
         return -1; 
     }
 
-	//¶ÁÈ¡ËùÒªhookµÄº¯ÊıÇ°Îå¸ö×Ö½Ú
+	//è¯»å–æ‰€è¦hookçš„å‡½æ•°å‰äº”ä¸ªå­—èŠ‚
     if(ReadProcessMemory(hProcess, iNode->address, buff, 5, &dwHasWrite)) 
     { 
         if(dwHasWrite != 5) 
@@ -1058,18 +1057,18 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
  
     }else 
     { 
-        printf("\n¶ÁÈ¡Ô¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError()); 
+        printf("\nè¯»å–è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError()); 
         CloseHandle(hProcess); 
         return -1; 
     }
 
-	//Èç¹ûº¯ÊıÇ°Îå¸ö×Ö½Ú²»ÊÇ mov edi,edi push ebp mov ebp,espÔòÍË³öinline hooking
+	//å¦‚æœå‡½æ•°å‰äº”ä¸ªå­—èŠ‚ä¸æ˜¯ mov edi,edi push ebp mov ebp,espåˆ™é€€å‡ºinline hooking
 	if (0 != strcmp(buff,"\x8b\xff\x55\x8b\xec"))
 	{
 		return -1;
 	}
 	
-	//ÉêÇë120×Ö½ÚµÄÊı¾İ¿Õ¼ä
+	//ç”³è¯·120å­—èŠ‚çš„æ•°æ®ç©ºé—´
     lpRemoteBuf = VirtualAllocEx(hProcess, NULL, 120, MEM_COMMIT, PAGE_READWRITE);
     if(WriteProcessMemory(hProcess, lpRemoteBuf, data, 120, &dwHasWrite)) 
     { 
@@ -1082,28 +1081,28 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
  
     }else 
     { 
-        printf("\nĞ´ÈëÔ¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError()); 
+        printf("\nå†™å…¥è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError()); 
         CloseHandle(hProcess); 
         return -1; 
     }
 
-	temp = (int)lpRemoteBuf;  //»ñÈ¡Êı¾İÔÚÄÚ´æÖĞµÄÊ×µØÖ·
+	temp = (int)lpRemoteBuf;  //è·å–æ•°æ®åœ¨å†…å­˜ä¸­çš„é¦–åœ°å€
 	addr[0] = temp&0xff;
 	addr[1] = temp>>8&0xff;
 	addr[2] = temp>>16&0xff;
 	addr[3] = temp>>24&0xff;
 
-	shellcode[11] = addr[0];  //"test"µÄÊ×µØÖ·
+	shellcode[11] = addr[0];  //"test"çš„é¦–åœ°å€
 	shellcode[12] = addr[1];
 	shellcode[13] = addr[2];
 	shellcode[14] = addr[3];
 
-	shellcode[16] = addr[0]+8; //ËùÒªÏÔÊ¾µÄ×Ö·û´®Ê×µØÖ·
+	shellcode[16] = addr[0]+8; //æ‰€è¦æ˜¾ç¤ºçš„å­—ç¬¦ä¸²é¦–åœ°å€
 	shellcode[17] = addr[1];
 	shellcode[18] = addr[2];
 	shellcode[19] = addr[3];
 
-	temp = (int)bkINode->address; //MessageBoxAµÄµØÖ·
+	temp = (int)bkINode->address; //MessageBoxAçš„åœ°å€
 	addr[0] = temp&0xff;
 	addr[1] = temp>>8&0xff;
 	addr[2] = temp>>16&0xff;
@@ -1113,7 +1112,7 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
 	shellcode[25] = addr[2];
 	shellcode[26] = addr[3];
 
-	//ÏÈĞ´Èë42×Ö½ÚµÄshellcode
+	//å…ˆå†™å…¥42å­—èŠ‚çš„shellcode
     lpRemoteBuf = VirtualAllocEx(hProcess, NULL, 42, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     if(WriteProcessMemory(hProcess, lpRemoteBuf, shellcode, 42, &dwHasWrite)) 
     { 
@@ -1126,39 +1125,39 @@ int InlineHook(INode *iNode, PNode *pNode, int order, unsigned int pid)
  
     }else 
     { 
-        printf("\nĞ´ÈëÔ¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError()); 
+        printf("\nå†™å…¥è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError()); 
         CloseHandle(hProcess); 
         return -1; 
     }
 
-	temp = (int)lpRemoteBuf;        //»ñµÃshellcodeµÄÊ×µØÖ·
-	temp = temp - iNode->address-5; //¼ÆËãjmpµ½shellcodeµÄÆ«ÒÆ
+	temp = (int)lpRemoteBuf;        //è·å¾—shellcodeçš„é¦–åœ°å€
+	temp = temp - iNode->address-5; //è®¡ç®—jmpåˆ°shellcodeçš„åç§»
 	buff[0] = 0xe9;
 	buff[1] = temp&0xff;
 	buff[2] = temp>>8&0xff;
 	buff[3] = temp>>16&0xff;
-	buff[4] = temp>>24&0xff;       //µÃµ½jmp xxxµÄ¶ş½øÖÆÊı¾İ²¢Ğ´Èëº¯ÊıµÄÆäÊµÎå¸ö×Ö½Ú
+	buff[4] = temp>>24&0xff;       //å¾—åˆ°jmp xxxçš„äºŒè¿›åˆ¶æ•°æ®å¹¶å†™å…¥å‡½æ•°çš„å…¶å®äº”ä¸ªå­—èŠ‚
 	if(!WriteProcessMemory(hProcess, iNode->address, buff, 5, &dwHasWrite)) 
 	{ 
-		printf("\nĞ´ÈëÔ¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError());
+		printf("\nå†™å…¥è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError());
 	}
 
-	temp = (int)lpRemoteBuf;         //»ñÈ¡shellcodeµÄµØÖ·
-	temp = temp+47;                  //µÃµ½shellcodeÖĞjmp xxµÄÏÂÌõÖ¸ÁîµÄµØÖ·
-	temp = iNode->address - temp+5;  //µÃµ½jmp»ØÔ­À´º¯ÊıµÚÁù¸ö×Ö½ÚµÄÆğÊ¼µØÖ·
+	temp = (int)lpRemoteBuf;         //è·å–shellcodeçš„åœ°å€
+	temp = temp+47;                  //å¾—åˆ°shellcodeä¸­jmp xxçš„ä¸‹æ¡æŒ‡ä»¤çš„åœ°å€
+	temp = iNode->address - temp+5;  //å¾—åˆ°jmpå›åŸæ¥å‡½æ•°ç¬¬å…­ä¸ªå­—èŠ‚çš„èµ·å§‹åœ°å€
 	buff[0] = 0xe9;
 	buff[1] = temp&0xff;
 	buff[2] = temp>>8&0xff;
 	buff[3] = temp>>16&0xff;
 	buff[4] = temp>>24&0xff;
-	temp = (int)lpRemoteBuf+42;      //µÃµ½jmp xxxÔÚshellcodeÖĞµÄµØÖ·,²¢Ğ´Èëshellcode×îºóÎå¸ö×Ö½Ú
+	temp = (int)lpRemoteBuf+42;      //å¾—åˆ°jmp xxxåœ¨shellcodeä¸­çš„åœ°å€,å¹¶å†™å…¥shellcodeæœ€åäº”ä¸ªå­—èŠ‚
 	if(WriteProcessMemory(hProcess,temp , buff, 5, &dwHasWrite)) 
 	{ 
 		return 0;
 	}
 	else
 	{
-		printf("\nĞ´ÈëÔ¶³Ì½ø³ÌÄÚ´æ¿Õ¼ä³ö´í%d¡£",GetLastError());
+		printf("\nå†™å…¥è¿œç¨‹è¿›ç¨‹å†…å­˜ç©ºé—´å‡ºé”™%dã€‚",GetLastError());
 	}
 		
 	CloseHandle(hProcess); 
